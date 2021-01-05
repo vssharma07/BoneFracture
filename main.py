@@ -35,10 +35,12 @@ img=[]
 for i in range(len(study_data["valid"]["Path"])):
 	for j in range(study_data["valid"]["Count"][i]):
 		img.append([[study_data["valid"]["Path"][i]+"image"+str(j+1)+".png"], study_data["valid"]["Label"][i]])
-ou
 path=img[34][0][0]
 RImg=cv2.imread(path,0)
 print(path)
+
+
+
 plt.subplot(1,2,1),plt.imshow(RImg,cmap = 'gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 plt.show()
