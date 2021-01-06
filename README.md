@@ -1,2 +1,2 @@
 # BoneFracture
-This project is about the detection of bone fracture in the human body using DIP and ML techniques
+This project is about the detection of anamolies in the bones of six parts of the human body.

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -28,19 +29,31 @@ def get_study_level_data(study_type):
     return study_data
 
 
-study_data = get_study_level_data(study_type='XR_WRIST')
+study_data = get_study_level_data(study_type='XR_ELBOW')
 
 img=[]
 
 for i in range(len(study_data["valid"]["Path"])):
 	for j in range(study_data["valid"]["Count"][i]):
 		img.append([[study_data["valid"]["Path"][i]+"image"+str(j+1)+".png"], study_data["valid"]["Label"][i]])
-path=img[34][0][0]
+path=img[25][0][0]
 RImg=cv2.imread(path,0)
 print(path)
-
-
+#closing=cv2.MORPHOLOGY(RImg,0)
+edges=cv2.Canny(RImg, 10,30)
+pixel=np.asarray(RImg, dtype=np.uint8)
+#for x in pixel:
+#  for y in x:
+#    if y<30:
+#      pixel[x,y]=0
+#    if y>240:
+#      pixel[x,y]=0
+#print(type(pixel))
+#editimg =Image.fromarray(pixel)
 
 plt.subplot(1,2,1),plt.imshow(RImg,cmap = 'gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+plt.subplot(1,2,2),plt.imshow(edges,cmap = 'gray')
+plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+
 plt.show()
