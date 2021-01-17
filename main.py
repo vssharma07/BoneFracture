@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import mym3
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
@@ -31,29 +32,42 @@ def get_study_level_data(study_type):
 
 study_data = get_study_level_data(study_type='XR_ELBOW')
 
-img=[]
-
+Valid=[]
+Train=[]
 for i in range(len(study_data["valid"]["Path"])):
 	for j in range(study_data["valid"]["Count"][i]):
-		img.append([[study_data["valid"]["Path"][i]+"image"+str(j+1)+".png"], study_data["valid"]["Label"][i]])
-path=img[25][0][0]
+		Valid.append([study_data["valid"]["Path"][i]+"image"+str(j+1)+".png", study_data["valid"]["Label"][i]])
+for i in range(len(study_data["train"]["Path"])):
+  for j in range(study_data["train"]["Count"][i]):
+    Train.append([study_data["train"]["Path"][i]+"image"+str(j+1)+".pmg", study_data["train"]["Label"][i]])
+path=Valid[39][0]
 RImg=cv2.imread(path,0)
 print(path)
+#path=Train[3][0]
+#print(path)
+m3=mym3.mym3edit(RImg)
+median=np.median(m3)
+mean=np.mean(m3)
+std=np.std(m3)
+print(mean, median, std)
+diff=abs(int(mean-median))
+if mean >median:
+  lower=10
+else:
+  lower=0
+#print(len(Train))
 #closing=cv2.MORPHOLOGY(RImg,0)
-edges=cv2.Canny(RImg, 10,30)
-pixel=np.asarray(RImg, dtype=np.uint8)
-#for x in pixel:
-#  for y in x:
-#    if y<30:
-#      pixel[x,y]=0
-#    if y>240:
-#      pixel[x,y]=0
-#print(type(pixel))
-#editimg =Image.fromarray(pixel)
+edges=cv2.Canny(m3, lower, min(mean, median))
+edges1=cv2.Canny(RImg, lower, min(mean, median))
+#pixel=np.asarray(RImg, dtype=np.uint8)
 
-plt.subplot(1,2,1),plt.imshow(RImg,cmap = 'gray')
-plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(1,2,2),plt.imshow(edges,cmap = 'gray')
-plt.title('Original Image'), plt.xticks([]), plt.yticks([])
 
+plt.subplot(2,2,1),plt.imshow(RImg,cmap = 'gray')
+plt.title('Original Image'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,2),plt.imshow(m3,cmap = 'gray')
+plt.title('M3'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,3),plt.imshow(edges1,cmap = 'gray')
+plt.title('Canny on Original'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,4),plt.imshow(edges,cmap = 'gray')
+plt.title('Canny on M3'), plt.xticks([]), plt.yticks([])
 plt.show()
