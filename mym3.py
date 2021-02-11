@@ -10,5 +10,5 @@ def mym3edit(img):
   for x in range(1, len(edit)-1):
     for y in range(1, len(pixel[x])-1):
       #file:///usr/lib/modprobe.d/nvidia-installer-disable-nouveau.conf,/etc/modprobe.d/nvidia-installer-disable-nouveau.conf
-      edit[x][y]=math.sqrt(( pixel[x-1][y-1]**2 + pixel[x-1][y]**2 + pixel[x-1][y+1]**2 + pixel[x][y-1]**2 + pixel[x][y]**2 + pixel[x][y+1]**2 + pixel[x+1][y-1]**2 + pixel[x+1][y]**2 + pixel[x+1][y+1]**2)/9)
+      edit[x][y]=math.sqrt(( pixel[x-1][y-1]**2 + pixel[x-1][y]**2 + pixel[x-1][y+1]**2 + pixel[x][y-1]**2 + 2*(pixel[x][y]**2) + pixel[x][y+1]**2 + pixel[x+1][y-1]**2 + pixel[x+1][y]**2 + pixel[x+1][y+1]**2)/10)
   return edit

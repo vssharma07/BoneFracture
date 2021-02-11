@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
+#! /usr/bin/env python3.9
 
+import math
 import mym3
+import mym4
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
@@ -40,12 +42,15 @@ for i in range(len(study_data["valid"]["Path"])):
 for i in range(len(study_data["train"]["Path"])):
   for j in range(study_data["train"]["Count"][i]):
     Train.append([study_data["train"]["Path"][i]+"image"+str(j+1)+".pmg", study_data["train"]["Label"][i]])
-path=Valid[39][0]
+path=Valid[12][0]
+print(len(Valid))
+print(len(Train))
 RImg=cv2.imread(path,0)
 print(path)
 #path=Train[3][0]
 #print(path)
 m3=mym3.mym3edit(RImg)
+m4=mym4.mym4edit(RImg)
 median=np.median(m3)
 mean=np.mean(m3)
 std=np.std(m3)
@@ -57,17 +62,26 @@ else:
   lower=0
 #print(len(Train))
 #closing=cv2.MORPHOLOGY(RImg,0)
-edges=cv2.Canny(m3, lower, min(mean, median))
-edges1=cv2.Canny(RImg, lower, min(mean, median))
+sobelx = cv2.Sobel(m3,cv2.CV_64F,1,0,ksize=5)
+abs_sobelx = np.absolute(sobelx)
+scaled_sobelx = np.uint8(255*abs_sobelx/np.max(abs_sobelx))
+sobely = cv2.Sobel(m3,cv2.CV_64F,0,1,ksize=5)
+abs_sobely = np.absolute(sobely)
+scaled_sobely = np.uint8(255*abs_sobely/np.max(abs_sobely))
+#sobel=math.sqrt(scaled_sobelx**2 + scaled_sobely**2)
+grad = cv2.addWeighted(scaled_sobelx, 0.5, scaled_sobely, 0.5, 0)
+laplacian = cv2.Laplacian(RImg,cv2.CV_64F)
+edges=cv2.Canny(RImg, 0, 10)
+edges1=cv2.Canny(m4, 0, 10)
 #pixel=np.asarray(RImg, dtype=np.uint8)
-
-
+gray = np.float32(edges1)
+dst = cv2.cornerHarris(gray,3,3,0.04)
 plt.subplot(2,2,1),plt.imshow(RImg,cmap = 'gray')
 plt.title('Original Image'), plt.xticks([]), plt.yticks([])
-plt.subplot(2,2,2),plt.imshow(m3,cmap = 'gray')
-plt.title('M3'), plt.xticks([]), plt.yticks([])
-plt.subplot(2,2,3),plt.imshow(edges1,cmap = 'gray')
-plt.title('Canny on Original'), plt.xticks([]), plt.yticks([])
-plt.subplot(2,2,4),plt.imshow(edges,cmap = 'gray')
-plt.title('Canny on M3'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,2),plt.imshow(edges,cmap = 'gray')
+plt.title('Original Image Canny'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,3),plt.imshow(m4,cmap = 'gray')
+plt.title('Filtered Image'), plt.xticks([]), plt.yticks([])
+plt.subplot(2,2,4),plt.imshow(sobel,cmap = 'gray')
+plt.title('Filtered Image Canny'), plt.xticks([]), plt.yticks([])
 plt.show()
